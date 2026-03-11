@@ -8,7 +8,6 @@ CSRF_TRUSTED_ORIGINS = [
 
 INSTALLED_APPS += [
     "django_browser_reload",
-    "storages",
 ]
 
 MIDDLEWARE += [
@@ -17,49 +16,40 @@ MIDDLEWARE += [
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("POSTGRES_DB", default="mindjunkies"),
+        "USER": config("POSTGRES_USER", default="mindjunkies"),
+        "PASSWORD": config("POSTGRES_PASSWORD", default="mindjunkies"),
+        "HOST": config("POSTGRES_HOST", default="localhost"),
+        "PORT": config("POSTGRES_PORT", default="5432"),
     }
 }
 
 STORAGES = {
     "default": {
-        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-        "OPTIONS": {
-            "bucket_name": "mindjunkies",
-            "access_key": config("AWS_ACCESS_KEY_ID"),
-            "secret_key": config("AWS_SECRET_ACCESS_KEY"),
-            "region_name": "blr1",
-            "endpoint_url": "https://blr1.digitaloceanspaces.com",
-            "default_acl": "public-read",
-            "file_overwrite": False,
-            "location": "media",
-        },
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-        "OPTIONS": {
-            "bucket_name": "mindjunkies",
-            "access_key": config("AWS_ACCESS_KEY_ID"),
-            "secret_key": config("AWS_SECRET_ACCESS_KEY"),
-            "region_name": "blr1",
-            "endpoint_url": "https://blr1.digitaloceanspaces.com",
-            "default_acl": "public-read",
-            "file_overwrite": False,
-            "location": "static",
-        },
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
 
-ELASTICSEARCH_DSL = {"default": {"hosts": "http://localhost:9200"}}
+ELASTICSEARCH_DSL = {
+    "default": {
+        "hosts": f"http://{config('ELASTICSEARCH_HOST', default='localhost')}:9200"
+    }
+}
+
+REDIS_HOST = config("REDIS_HOST", default="127.0.0.1")
+REDIS_PORT = config("REDIS_PORT", default="6379")
+REDIS_PASSWORD = config("REDIS_PASSWORD", default=None)
 
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",  # <host>:<port>/<db>
+        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/1",
         "OPTIONS": {
-            "PASSWORD": config('REDIS_PASSWORD'),  # match your requirepass
-            # optionally: "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            **({"PASSWORD": REDIS_PASSWORD} if REDIS_PASSWORD else {}),
         },
     }
 }

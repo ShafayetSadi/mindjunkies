@@ -1,57 +1,87 @@
 services:
-  mindjunkies:
-    depends_on:
-      - postgres_db
-      - redis_db
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: django-mindjunkies
-    environment:
-      - PORT=8000
+  db:
+    image: postgres:17
+    container_name: mindjunkies-db
+    restart: unless-stopped
     env_file:
       - .env
     ports:
-      - "8000:8000"
-    entrypoint: [ "sh", "-c", "chmod +x /app/migrate.sh /app/entrypoint.sh && /app/migrate.sh && /app/entrypoint.sh" ]
-
-  postgres_db:
-    image: postgres:latest
-    restart: always
-    command: -p 5434
-    env_file:
-      - .env
-    expose:
-      - 5434
-    ports:
-      - "5434:5434"
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
-  redis_db:
-    image: redis:latest
-    restart: always
-    expose:
-      - 6379
+  redis:
+    image: redis:7.2
+    container_name: mindjunkies-redis
+    restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    entrypoint: redis-server --appendonly yes --port 6379
+    entrypoint: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
-    volumes:
-      - esdata01:/usr/share/elasticsearch/data
+    container_name: mindjunkies-elasticsearch
+    restart: unless-stopped
     ports:
-      - 9200:9200
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
 
-
+  mindjunkies:
+    container_name: mindjunkies-web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - PORT=8000
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - /app/.venv
+    entrypoint:
+      [
+        "sh",
+        "-c",
+        "/app/migrate.sh && /app/entrypoint.sh",
+      ]
 
 volumes:
-  esdata01:
-  postgres_data:
+  db_data:
   redis_data:
+  elasticsearch_data:

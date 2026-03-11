@@ -1,100 +1,202 @@
-<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="800" height="600" fill="#f8fafc" rx="5" ry="5"/>
-  
-  <!-- Title -->
-  <text x="400" y="40" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#334155">BiddyaPeeth System Architecture</text>
-  
-  <!-- Frontend Layer -->
-  <rect x="50" y="80" width="700" height="90" fill="#dbeafe" rx="5" ry="5" stroke="#3b82f6" stroke-width="2"/>
-  <text x="400" y="110" font-family="Arial" font-size="18" font-weight="bold" text-anchor="middle" fill="#1e40af">Frontend Layer</text>
-  
-  <rect x="100" y="125" width="120" height="30" fill="#bfdbfe" rx="5" ry="5" stroke="#3b82f6" stroke-width="1"/>
-  <text x="160" y="145" font-family="Arial" font-size="12" text-anchor="middle">Tailwind CSS UI</text>
-  
-  <rect x="240" y="125" width="120" height="30" fill="#bfdbfe" rx="5" ry="5" stroke="#3b82f6" stroke-width="1"/>
-  <text x="300" y="145" font-family="Arial" font-size="12" text-anchor="middle">Django Templates</text>
-  
-  <rect x="380" y="125" width="120" height="30" fill="#bfdbfe" rx="5" ry="5" stroke="#3b82f6" stroke-width="1"/>
-  <text x="440" y="145" font-family="Arial" font-size="12" text-anchor="middle">HTMX</text>
-  
-  <rect x="520" y="125" width="180" height="30" fill="#bfdbfe" rx="5" ry="5" stroke="#3b82f6" stroke-width="1"/>
-  <text x="610" y="145" font-family="Arial" font-size="12" text-anchor="middle">Django Unfold Admin</text>
-  
-  <!-- Application Layer -->
-  <rect x="50" y="190" width="700" height="220" fill="#dcfce7" rx="5" ry="5" stroke="#22c55e" stroke-width="2"/>
-  <text x="400" y="215" font-family="Arial" font-size="18" font-weight="bold" text-anchor="middle" fill="#166534">Application Layer</text>
-  
-  <!-- Modules -->
-  <rect x="80" y="235" width="150" height="150" fill="#bbf7d0" rx="5" ry="5" stroke="#22c55e" stroke-width="1"/>
-  <text x="155" y="255" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle">Core Modules</text>
-  <rect x="95" y="265" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="155" y="282" font-family="Arial" font-size="12" text-anchor="middle">Accounts</text>
-  <rect x="95" y="295" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="155" y="312" font-family="Arial" font-size="12" text-anchor="middle">Dashboard</text>
-  <rect x="95" y="325" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="155" y="342" font-family="Arial" font-size="12" text-anchor="middle">Courses</text>
-  <rect x="95" y="355" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="155" y="372" font-family="Arial" font-size="12" text-anchor="middle">Lecture</text>
-  
-  <rect x="250" y="235" width="150" height="150" fill="#bbf7d0" rx="5" ry="5" stroke="#22c55e" stroke-width="1"/>
-  <text x="325" y="255" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle">Interactive Modules</text>
-  <rect x="265" y="265" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="325" y="282" font-family="Arial" font-size="12" text-anchor="middle">Live Classes</text>
-  <rect x="265" y="295" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="325" y="312" font-family="Arial" font-size="12" text-anchor="middle">Forums</text>
-  <rect x="265" y="325" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="325" y="342" font-family="Arial" font-size="12" text-anchor="middle">Payments</text>
-  <rect x="265" y="355" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="325" y="372" font-family="Arial" font-size="12" text-anchor="middle">Notifications</text>
-  
-  <rect x="420" y="235" width="300" height="150" fill="#bbf7d0" rx="5" ry="5" stroke="#22c55e" stroke-width="1"/>
-  <text x="570" y="255" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle">Django Services</text>
-  
-  <rect x="440" y="265" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="500" y="282" font-family="Arial" font-size="12" text-anchor="middle">Django ORM</text>
-  <rect x="440" y="295" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="500" y="312" font-family="Arial" font-size="12" text-anchor="middle">Authentication</text>
-  <rect x="440" y="325" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="500" y="342" font-family="Arial" font-size="12" text-anchor="middle">Django REST API</text>
-  <rect x="440" y="355" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="500" y="372" font-family="Arial" font-size="12" text-anchor="middle">Middlewares</text>
-  
-  <rect x="580" y="265" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="640" y="282" font-family="Arial" font-size="12" text-anchor="middle">Django Signals</text>
-  <rect x="580" y="295" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="640" y="312" font-family="Arial" font-size="12" text-anchor="middle">Django Forms</text>
-  <rect x="580" y="325" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="640" y="342" font-family="Arial" font-size="12" text-anchor="middle">Django Silk</text>
-  <rect x="580" y="355" width="120" height="25" fill="#a7f3d0" rx="3" ry="3"/>
-  <text x="640" y="372" font-family="Arial" font-size="12" text-anchor="middle">Celery Tasks</text>
-  
-  <!-- Data Layer -->
-  <rect x="50" y="430" width="700" height="140" fill="#fee2e2" rx="5" ry="5" stroke="#ef4444" stroke-width="2"/>
-  <text x="400" y="455" font-family="Arial" font-size="18" font-weight="bold" text-anchor="middle" fill="#991b1b">Data Layer</text>
-  
-  <rect x="100" y="480" width="180" height="60" fill="#fecaca" rx="5" ry="5" stroke="#ef4444" stroke-width="1"/>
-  <text x="190" y="510" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle">PostgreSQL</text>
-  <text x="190" y="525" font-family="Arial" font-size="10" text-anchor="middle">Primary Database</text>
-  
-  <rect x="310" y="480" width="180" height="60" fill="#fecaca" rx="5" ry="5" stroke="#ef4444" stroke-width="1"/>
-  <text x="400" y="510" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle">Redis</text>
-  <text x="400" y="525" font-family="Arial" font-size="10" text-anchor="middle">Caching & Queues</text>
-  
-  <rect x="520" y="480" width="180" height="60" fill="#fecaca" rx="5" ry="5" stroke="#ef4444" stroke-width="1"/>
-  <text x="610" y="510" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle">Elasticsearch</text>
-  <text x="610" y="525" font-family="Arial" font-size="10" text-anchor="middle">Search & Indexing</text>
-  
-  <!-- Arrows -->
-  <!-- Frontend to App Layer -->
-  <line x1="400" y1="170" x2="400" y2="190" stroke="#64748b" stroke-width="2" stroke-dasharray="5,3"/>
-  <polygon points="400,190 395,180 405,180" fill="#64748b"/>
-  
-  <!-- App Layer to Data Layer -->
-  <line x1="400" y1="410" x2="400" y2="430" stroke="#64748b" stroke-width="2" stroke-dasharray="5,3"/>
-  <polygon points="400,430 395,420 405,420" fill="#64748b"/>
-  
-  <!-- Infrastructure note -->
-  <rect x="50" y="580" width="700" height="20" fill="#e2e8f0" rx="3" ry="3"/>
-  <text x="400" y="594" font-family="Arial" font-size="10" text-anchor="middle" fill="#334155">Infrastructure: Docker, Kubernetes, AWS/GCP/Azure</text>
-</svg>
+# MindJunkies — System Architecture Overview
+
+## 1. Project Structure
+
+```
+mindjunkies/
+├── config/            # Shared base config (BaseModel, JitsiJWT builder)
+├── project/
+│   └── settings/      # base.py, development.py, production.py, test.py
+├── mindjunkies/       # All Django apps
+│   ├── accounts/      # User, Profile, auth
+│   ├── courses/       # Course catalog, modules, ratings, enrollments
+│   ├── lecture/       # Lecture content (video, PDF), progress tracking
+│   ├── payments/      # SSLCommerz integration, teacher balance
+│   ├── live_classes/  # Jitsi-based video conferencing
+│   ├── forums/        # Course discussion boards (Elasticsearch)
+│   ├── dashboard/     # Teacher verification & teacher portal
+│   └── home/          # Homepage, global search
+├── docs/              # Architecture, SRS, guides
+└── pyproject.toml
+```
+
+---
+
+## 2. Django Apps & Responsibilities
+
+| App | Responsibility |
+|---|---|
+| **accounts** | Custom `User` (UUID PK, `is_teacher` flag), `Profile`, Google OAuth via allauth |
+| **courses** | `Course`, `Module`, `Enrollment`, `Rating`, `CourseToken` (approval workflow), hierarchical `CourseCategory` |
+| **lecture** | `Lecture`, `LectureVideo` (Cloudinary HLS), `LecturePDF`, `LectureCompletion`, progression tracking |
+| **payments** | SSLCommerz checkout, `Transaction`, teacher `Balance`, `BalanceHistory` |
+| **live_classes** | `LiveClass` model with Jitsi-as-a-Service JWT tokens (8x8.vc) |
+| **forums** | `ForumTopic`, `ForumComment`, `Reply`, nested likes, Elasticsearch indexing |
+| **dashboard** | `TeacherVerification`, `Certificate`, teacher portal views |
+| **home** | Homepage with Redis-cached popular/new courses, title search |
+
+---
+
+## 3. Database Models & Relationships
+
+```
+User (accounts.User — UUID PK, is_teacher)
+ ├── Profile (1:1)
+ ├── TeacherVerification (1:1)
+ ├── Balance (1:1)
+ ├── Course [teacher FK] ─── Enrollment [student FK] ─── Transaction (1:1 enrollment)
+ │       ├── Module ──────── Lecture ──── LectureVideo (Cloudinary)
+ │       │                            └── LecturePDF
+ │       ├── Rating [student FK]       └── LectureCompletion [user FK]
+ │       ├── LiveClass [teacher FK]
+ │       └── ForumTopic [course FK]
+ │               └── ForumComment
+ │                       └── Reply (self-referential)
+ └── BalanceHistory [user FK]
+```
+
+**Key constraints:**
+- `Enrollment`: unique_together `(course, student)`
+- `Rating`: unique_together `(student, course)` — one rating per user
+- `Module.order`: unique per course; `Lecture.order`: unique per module
+- `Transaction`: unique_together `(user, course)`
+
+---
+
+## 4. Request Flow
+
+```
+URL → View → (Business Logic) → Models/DB
+                   │
+                   ├─ Cache (Redis) — popular/new courses
+                   ├─ Cloudinary — media uploads
+                   ├─ SSLCommerz — payment redirect
+                   ├─ Elasticsearch — forum search
+                   └─ Signals → DB side-effects
+```
+
+**Example — Paid Course Enrollment:**
+```
+GET /payment/{slug}/checkout/
+  → CheckoutView
+    → create Enrollment(status=pending)
+    → init SSLCommerz session
+    → redirect to gateway
+
+POST /payment/{slug}/success/   [SSLCommerz webhook]
+  → CheckoutSuccessView (CSRF-exempt)
+    → create Transaction
+    → update teacher Balance + BalanceHistory
+    → set Enrollment(status=active)
+```
+
+**Example — Lecture Progress:**
+```
+POST /courses/{slug}/lecture/{id}/complete/
+  → MarkLectureCompleteView
+    → create LectureCompletion
+    → signal: update_module_progression_on_save
+      → recalculate (completed/total)*100
+      → save Enrollment.progression
+```
+
+---
+
+## 5. Authentication & Permissions
+
+**Backends:** `ModelBackend` + `allauth.AuthenticationBackend` + Google OAuth2
+
+**Access control layers:**
+
+| Mixin | What it enforces |
+|---|---|
+| `LoginRequiredMixin` | Must be authenticated |
+| `VerifiedTeacherRequiredMixin` | `is_teacher=True` AND `TeacherVerification.verified=True` |
+| Inline checks in views | Enrollment check for students; `course.teacher == request.user` for teachers |
+
+**Teacher workflow:**  
+Apply → `TeacherVerification` created → Admin approves → `User.is_teacher=True` → full dashboard access
+
+**Course publishing workflow:**  
+Create course → `CourseToken(status=pending)` → Admin approves → token `status=approved` → can upload content & run live classes
+
+**Email verification:** Mandatory (configured in allauth settings)
+
+---
+
+## 6. Background Jobs / Async Tasks
+
+No Celery. All "background" work is **synchronous via Django signals:**
+
+| Signal | Trigger | Effect |
+|---|---|---|
+| `post_save(LectureCompletion)` | Lecture marked complete | Recalculates `Enrollment.progression` |
+| `post_delete(LectureCompletion)` | Completion removed | Recalculates progression |
+| `post_delete(Lecture)` | Lecture deleted | Recalculates progression for all enrolled users |
+| `post_save(Rating)` | Rating saved | Updates `Course.total_rating` |
+| `course_updated` (custom) | Course created | Clears Redis cache keys `popular_courses`, `new_courses` |
+| `post_save(User)` | User created | Auto-creates `Profile` |
+
+---
+
+## 7. External Integrations
+
+| Service | Library | Used For |
+|---|---|---|
+| **SSLCommerz** | `sslcommerz-lib` | Bangladeshi payment gateway |
+| **Cloudinary** | `cloudinary` | User avatars, course images, lecture videos (HLS) |
+| **DigitalOcean Spaces** | `boto3` + `django-storages` | Static/media file hosting (S3-compatible, `blr1`) |
+| **Redis** | `django-redis` | Caching popular/new courses (5-min TTL) |
+| **Elasticsearch** | `django-elasticsearch-dsl` | Forum topic full-text search |
+| **Jitsi 8x8.vc** | Custom `JaaSJwtBuilder` (RS256) | Live video conferencing, JWT-gated teacher rooms |
+| **Resend** | `resend` | Transactional email (verification, password reset) |
+| **Google OAuth2** | `django-allauth` | Social login |
+
+---
+
+## 8. Key Business Logic
+
+**Course economics:**
+- Free courses: instant `Enrollment(status=active)`
+- Paid courses: SSLCommerz flow; 100% of `course_price` credited to teacher balance
+
+**Content gating:** Lectures are only accessible to enrolled students OR the course teacher. `CourseToken` must be `approved` before teacher can upload content or create live classes.
+
+**Progression:** Purely percentage-based (`completed_lectures / total_lectures * 100`), stored on `Enrollment.progression`.
+
+**Forum search:** Elasticsearch-backed, searches `title` field of `ForumTopic` with `match` query — per-course scoped.
+
+**Live classes:** Jitsi room URL = `8x8.vc/{APP_ID}/{meeting_id}`. Teachers get JWT with moderator rights (from `private.pem`); students join unauthenticated.
+
+---
+
+## 9. Potential Architectural Problems
+
+### Critical
+1. **No Celery / async workers.** Signal-based progression recalculation runs synchronously on every lecture completion. At scale (many students, many lectures), `update_all_progressions_on_lecture_delete` runs N queries blocking the request thread.
+
+2. **CSRF-exempt payment webhooks trust POST body blindly.** `CheckoutSuccessView` reads `value_a`/`value_b` from SSLCommerz POST to identify `user_id` and `course_slug` with no additional HMAC validation beyond SSLCommerz's own `verify_sign`. A forged POST could fraudulently activate enrollments.
+
+3. **Private key on disk.** `private.pem` is read from the filesystem inside the `lecture/` directory — risky in containerized/cloud deployments.
+
+### Moderate
+4. **No soft-delete.** `BaseModel` has a `deleted_at` field but no `SoftDeleteManager` or queryset filter — it exists but is never used.
+
+5. **Cache invalidation is partial.** Only `CreateCourseView` fires `course_updated`. Course updates, deletions, and enrollment changes don't invalidate the cache, so stale data can persist for up to 5 minutes.
+
+6. **`ForumComment.content` is `CharField(150)`** — very short for a discussion platform. Same for `ForumTopic.content`.
+
+7. **Hardcoded user info in payment requests** — phone, address, city, country are hardcoded strings in `CheckoutView` instead of pulled from `Profile`.
+
+8. **`PaymentGateway` model stores `store_pass` in plaintext** in the database instead of using environment variables.
+
+### Minor
+9. **No rate limiting on course rating, forum, or lecture completion views** — susceptible to spam.
+10. **Elasticsearch is only used for forum search** — course search falls back to basic `icontains`, which won't scale.
+11. **`silk` profiling middleware is always active** — should be disabled or gated behind `DEBUG` in production.
+
+---
+
+**Stack summary:** Django 5.1 · PostgreSQL · Redis · Cloudinary · DigitalOcean Spaces · SSLCommerz · Jitsi 8x8 · Elasticsearch · Resend email · Tailwind CSS · HTMX
+
+---

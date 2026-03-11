@@ -1,8 +1,7 @@
 from pathlib import Path
 
 import cloudinary
-import cloudinary.uploader
-from decouple import config, Csv
+from decouple import Csv, config
 from django.utils.translation import gettext_lazy as _
 
 # Configuration

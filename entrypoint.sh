@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "Building Tailwind CSS..."
+uv run python manage.py tailwind build
+
 echo "Collecting static files..."
 uv run python manage.py collectstatic --noinput
 
