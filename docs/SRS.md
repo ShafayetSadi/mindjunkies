@@ -28,7 +28,7 @@ This document is organized to provide a detailed view of system features, archit
 ## 2. Overall Description
 
 ### 2.1 Product Perspective
-BiddyaPeeth will be a web-based application built using Django. It will be accessible through modern web browsers and support integration with third-party services (e.g., Cloudinary for image storage, video conferencing APIs).
+BiddyaPeeth will be a web-based application built using Django. It will be accessible through modern web browsers and support integration with third-party services (e.g., media storage backends, video conferencing APIs).
 
 ### 2.2 Product Functions
 - User authentication and authorization
@@ -119,7 +119,7 @@ The system follows a standard MVC pattern using Django. Deployment is handled vi
 - Frontend: HTMX, Tailwind CSS, DaisyUI
 - Backend: Django (Python)
 - Database: SQLite (Dev), PostgreSQL (Prod)
-- Storage: Cloudinary for images and videos
+- Storage: object/media storage for images and videos
 - Testing: pytest
 - Deployment: AWS
 
@@ -139,7 +139,7 @@ The system follows a standard MVC pattern using Django. Deployment is handled vi
 ## 8. Appendices
 
 ### 8.1 Glossary
-- **Cloudinary:** A cloud service for media storage
+- **Media storage backend:** Service for media storage
 - **pytest:** A testing framework for Python
 
 ### 8.2 References

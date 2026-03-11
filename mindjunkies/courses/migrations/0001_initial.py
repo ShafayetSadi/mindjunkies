@@ -2,7 +2,6 @@
 
 import uuid
 
-import cloudinary.models
 import django.db.models.deletion
 import django.db.models.manager
 import mptt.fields
@@ -87,9 +86,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "course_image",
-                    cloudinary.models.CloudinaryField(
-                        blank=True, max_length=255, null=True
-                    ),
+                    models.ImageField(blank=True, null=True, upload_to="course_images/"),
                 ),
                 ("published", models.BooleanField(default=False)),
                 ("published_on", models.DateTimeField(blank=True, null=True)),

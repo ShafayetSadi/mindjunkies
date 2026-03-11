@@ -1,16 +1,12 @@
+from django.core.cache import cache
 from django.db import models
 from django.db.models import Count
-from django.core.cache import cache
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
-from django.views.decorators.http import require_http_methods
 from django.views import View
-import uuid
-import requests
-from django.http import HttpResponse
+from django.views.decorators.http import require_http_methods
 
-from mindjunkies.courses.models import Course, CourseCategory, Enrollment, LastVisitedCourse
-from mindjunkies.lecture.models import LastVisitedModule, Lecture
+from mindjunkies.courses.models import Course, CourseCategory, Enrollment
 
 
 def get_popular_courses():
@@ -20,9 +16,13 @@ def get_popular_courses():
     print("Cache key:", popular_courses)
     if popular_courses is None:
         print("Cache miss for popular courses")
-        popular_courses = Course.objects.annotate(
-            active_enrollments=Count('enrollments', filter=models.Q(enrollments__status='active'))
-        ).filter(status="published", verified=True).order_by('-active_enrollments', '-total_rating')[:8]
+        popular_courses = (
+            Course.objects.annotate(
+                active_enrollments=Count("enrollments", filter=models.Q(enrollments__status="active"))
+            )
+            .filter(status="published", verified=True)
+            .order_by("-active_enrollments", "-total_rating")[:8]
+        )
 
         popular_courses = list(popular_courses)
         cache.set(cache_key, popular_courses, timeout=60 * 5)
@@ -58,17 +58,18 @@ class HomeView(View):
         teacher_courses = []
 
         if request.user.is_authenticated:
-            enrollments = Enrollment.objects.filter(
-                student=request.user, status="active"
-            ).prefetch_related("course")
+            enrollments = Enrollment.objects.filter(student=request.user, status="active").prefetch_related("course")
 
             enrolled_courses = [enrollment.course for enrollment in enrollments][:4]
             teacher_courses = Course.objects.filter(teacher=request.user)
 
         teacher_course_ids = teacher_courses.values_list("id", flat=True) if teacher_courses else []
 
-        new_courses = Course.objects.filter(status="published", verified=True).exclude(
-            id__in=teacher_course_ids).order_by("-created_at")[:4]
+        new_courses = (
+            Course.objects.filter(status="published", verified=True)
+            .exclude(id__in=teacher_course_ids)
+            .order_by("-created_at")[:4]
+        )
 
         popular_courses = get_popular_courses()
 
@@ -98,9 +99,7 @@ def search_view(request):
         print(courses)
         for course in courses:
             highlighted_title = course.title.replace(query, f"<mark>{query}</mark>")
-            highlighted_courses.append(
-                {"course": course, "highlighted_title": mark_safe(highlighted_title)}
-            )
+            highlighted_courses.append({"course": course, "highlighted_title": mark_safe(highlighted_title)})
 
     return render(
         request,

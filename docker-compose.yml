@@ -3,8 +3,10 @@ services:
     image: postgres:17
     container_name: mindjunkies-db
     restart: unless-stopped
-    env_file:
-      - .env
+    environment:
+      - POSTGRES_USER=mindjunkies
+      - POSTGRES_PASSWORD=mindjunkies
+      - POSTGRES_DB=mindjunkies
     ports:
       - "5432:5432"
     volumes:
@@ -32,24 +34,25 @@ services:
       retries: 5
       start_period: 30s
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
-    container_name: mindjunkies-elasticsearch
+  minio:
+    image: minio/minio:latest
+    container_name: mindjunkies-minio
     restart: unless-stopped
     ports:
-      - "9200:9200"
+      - "9000:9000" # S3 API
+      - "9001:9001" # Web console → http://localhost:9001
     volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
+      - minio_data:/data
     environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      test: ["CMD", "mc", "ready", "local"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 60s
+      start_period: 10s
 
   mindjunkies:
     container_name: mindjunkies-web
@@ -59,7 +62,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      elasticsearch:
+      minio:
         condition: service_healthy
     build:
       context: .
@@ -67,21 +70,19 @@ services:
     environment:
       - PORT=8000
       - PYTHONUNBUFFERED=1
+      - UV_PROJECT_ENVIRONMENT=/venv
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+      - MINIO_ENDPOINT=minio:9000
     env_file:
       - .env
     ports:
       - "8000:8000"
     volumes:
       - .:/app
-      - /app/.venv
-    entrypoint:
-      [
-        "sh",
-        "-c",
-        "/app/migrate.sh && /app/entrypoint.sh",
-      ]
+    entrypoint: ["sh", "-c", "/app/migrate.sh && /app/entrypoint.sh"]
 
 volumes:
   db_data:
   redis_data:
-  elasticsearch_data:
+  minio_data:

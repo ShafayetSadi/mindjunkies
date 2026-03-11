@@ -1,13 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView
 
-from mindjunkies.courses.models import Course, Module, CourseToken
+from mindjunkies.courses.models import Course, CourseToken, Module
 
-from .documents import ForumTopicDocument
 from .forms import ForumCommentForm, ForumReplyForm, ForumTopicForm
 from .models import ForumComment, ForumTopic, Reply
 
@@ -62,8 +62,9 @@ class ForumThreadView(LoginRequiredMixin, CourseContextMixin, TemplateView):
 
         search_query = self.request.GET.get("search")
         if search_query:
-            forumlist = ForumTopicDocument.search().query("match", title=search_query)
-            context["posts"] = forumlist.to_queryset()
+            context["posts"] = module.forum_posts.filter(
+                Q(title__icontains=search_query) | Q(content__icontains=search_query)
+            )
 
         return context
 
@@ -158,9 +159,7 @@ class TopicSubmissionView(BaseTopicFormView):
     def get_success_url(self):
         course_slug = self.kwargs.get("course_slug", "")
         module_id = self.kwargs.get("module_id", "")
-        return reverse(
-            "forum_thread", kwargs={"course_slug": course_slug, "module_id": module_id}
-        )
+        return reverse("forum_thread", kwargs={"course_slug": course_slug, "module_id": module_id})
 
 
 class TopicUpdateView(BaseTopicFormView):
@@ -314,7 +313,6 @@ class ReplyFormView(LoginRequiredMixin, CourseContextMixin, View):
         return render(request, "forums/reply_form.html", context)
 
     def post(self, request, *args, **kwargs):
-
         reply_id = self.kwargs.get("reply_id")
         reply = get_object_or_404(Reply, id=reply_id)
         reply_form = ForumReplyForm(request.POST)

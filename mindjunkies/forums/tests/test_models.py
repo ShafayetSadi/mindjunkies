@@ -33,7 +33,7 @@ class TestLectureForm(TestCase):
             teacher=self.user,
             level="beginner",
             category=self.category,
-            course_image="course_images/test_image.jpg",  # Mock CloudinaryField
+            course_image="course_images/test_image.jpg",
         )
         self.module = Module.objects.create(
             title="Test Module",
@@ -41,7 +41,7 @@ class TestLectureForm(TestCase):
             course=self.course,
         )
 
-    
+
     def test_invalid_form_missing_title(self):
         """Test invalid LectureForm with missing title"""
         data = {
@@ -174,7 +174,7 @@ class TestLecturePDFForm(TestCase):
         self.assertIn("pdf_file", form.errors)
         self.assertEqual(form.errors["pdf_file"], ["File size must be less than 5MB."])
 
-    
+
 @pytest.mark.django_db
 class TestLectureVideoForm(TestCase):
     def setUp(self):
@@ -210,5 +210,3 @@ class TestLectureVideoForm(TestCase):
             slug="test-lecture",
             order=1,
         )
-
-

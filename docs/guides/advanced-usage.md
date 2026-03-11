@@ -45,7 +45,6 @@ doctl kubernetes cluster kubeconfig save django-mindjunkies
 
 # Apply Kubernetes manifests
 kubectl apply -f k8s/apps/django-mindjunkies-web.yml
-kubectl apply -f k8s/apps/elasticsearch.yml
 kubectl apply -f k8s/apps/redis.yml
 
 # Run post-deploy jobs

@@ -13,7 +13,7 @@ mindjunkies/
 │   ├── lecture/       # Lecture content (video, PDF), progress tracking
 │   ├── payments/      # SSLCommerz integration, teacher balance
 │   ├── live_classes/  # Jitsi-based video conferencing
-│   ├── forums/        # Course discussion boards (Elasticsearch)
+│   ├── forums/        # Course discussion boards
 │   ├── dashboard/     # Teacher verification & teacher portal
 │   └── home/          # Homepage, global search
 ├── docs/              # Architecture, SRS, guides
@@ -28,10 +28,10 @@ mindjunkies/
 |---|---|
 | **accounts** | Custom `User` (UUID PK, `is_teacher` flag), `Profile`, Google OAuth via allauth |
 | **courses** | `Course`, `Module`, `Enrollment`, `Rating`, `CourseToken` (approval workflow), hierarchical `CourseCategory` |
-| **lecture** | `Lecture`, `LectureVideo` (Cloudinary HLS), `LecturePDF`, `LectureCompletion`, progression tracking |
+| **lecture** | `Lecture`, `LectureVideo`, `LecturePDF`, `LectureCompletion`, progression tracking |
 | **payments** | SSLCommerz checkout, `Transaction`, teacher `Balance`, `BalanceHistory` |
 | **live_classes** | `LiveClass` model with Jitsi-as-a-Service JWT tokens (8x8.vc) |
-| **forums** | `ForumTopic`, `ForumComment`, `Reply`, nested likes, Elasticsearch indexing |
+| **forums** | `ForumTopic`, `ForumComment`, `Reply`, nested likes |
 | **dashboard** | `TeacherVerification`, `Certificate`, teacher portal views |
 | **home** | Homepage with Redis-cached popular/new courses, title search |
 
@@ -45,7 +45,7 @@ User (accounts.User — UUID PK, is_teacher)
  ├── TeacherVerification (1:1)
  ├── Balance (1:1)
  ├── Course [teacher FK] ─── Enrollment [student FK] ─── Transaction (1:1 enrollment)
- │       ├── Module ──────── Lecture ──── LectureVideo (Cloudinary)
+ │       ├── Module ──────── Lecture ──── LectureVideo
  │       │                            └── LecturePDF
  │       ├── Rating [student FK]       └── LectureCompletion [user FK]
  │       ├── LiveClass [teacher FK]
@@ -69,9 +69,8 @@ User (accounts.User — UUID PK, is_teacher)
 URL → View → (Business Logic) → Models/DB
                    │
                    ├─ Cache (Redis) — popular/new courses
-                   ├─ Cloudinary — media uploads
+                   ├─ Media storage — uploads
                    ├─ SSLCommerz — payment redirect
-                   ├─ Elasticsearch — forum search
                    └─ Signals → DB side-effects
 ```
 
@@ -144,10 +143,9 @@ No Celery. All "background" work is **synchronous via Django signals:**
 | Service | Library | Used For |
 |---|---|---|
 | **SSLCommerz** | `sslcommerz-lib` | Bangladeshi payment gateway |
-| **Cloudinary** | `cloudinary` | User avatars, course images, lecture videos (HLS) |
+| **Media storage** | Django storage backend | User avatars, course images, lecture videos |
 | **DigitalOcean Spaces** | `boto3` + `django-storages` | Static/media file hosting (S3-compatible, `blr1`) |
 | **Redis** | `django-redis` | Caching popular/new courses (5-min TTL) |
-| **Elasticsearch** | `django-elasticsearch-dsl` | Forum topic full-text search |
 | **Jitsi 8x8.vc** | Custom `JaaSJwtBuilder` (RS256) | Live video conferencing, JWT-gated teacher rooms |
 | **Resend** | `resend` | Transactional email (verification, password reset) |
 | **Google OAuth2** | `django-allauth` | Social login |
@@ -164,7 +162,7 @@ No Celery. All "background" work is **synchronous via Django signals:**
 
 **Progression:** Purely percentage-based (`completed_lectures / total_lectures * 100`), stored on `Enrollment.progression`.
 
-**Forum search:** Elasticsearch-backed, searches `title` field of `ForumTopic` with `match` query — per-course scoped.
+**Forum search:** Database-backed search for `ForumTopic` title/content, scoped per course.
 
 **Live classes:** Jitsi room URL = `8x8.vc/{APP_ID}/{meeting_id}`. Teachers get JWT with moderator rights (from `private.pem`); students join unauthenticated.
 
@@ -192,11 +190,10 @@ No Celery. All "background" work is **synchronous via Django signals:**
 
 ### Minor
 9. **No rate limiting on course rating, forum, or lecture completion views** — susceptible to spam.
-10. **Elasticsearch is only used for forum search** — course search falls back to basic `icontains`, which won't scale.
-11. **`silk` profiling middleware is always active** — should be disabled or gated behind `DEBUG` in production.
+10. **`silk` profiling middleware is always active** — should be disabled or gated behind `DEBUG` in production.
 
 ---
 
-**Stack summary:** Django 5.1 · PostgreSQL · Redis · Cloudinary · DigitalOcean Spaces · SSLCommerz · Jitsi 8x8 · Elasticsearch · Resend email · Tailwind CSS · HTMX
+**Stack summary:** Django 5.1 · PostgreSQL · Redis · DigitalOcean Spaces · SSLCommerz · Jitsi 8x8 · Resend email · Tailwind CSS · HTMX
 
 ---

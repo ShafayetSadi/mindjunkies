@@ -13,7 +13,6 @@
 ├── db.sqlite3
 ├── deployment-guide.md
 ├── dev.ps1
-├── docker-compose.elasticsearch_redis.yml
 ├── docker-compose.yml
 ├── docs
 │   ├── CODE_OF_CONDUCT.md
@@ -45,9 +44,6 @@
 │   │   ├── admin.py
 │   │   ├── apps.py
 │   │   ├── forms.py
-│   │   ├── management
-│   │   │   └── commands
-│   │   │       └── create_superuser.py
 │   │   ├── migrations
 │   │   │   ├── 0001_initial.py
 │   │   │   ├── 0002_user_is_teacher.py
@@ -167,7 +163,6 @@
 │   │   ├── __init__.py
 │   │   ├── admin.py
 │   │   ├── apps.py
-│   │   ├── documents.py
 │   │   ├── forms.py
 │   │   ├── migrations
 │   │   │   ├── 0001_initial.py

@@ -65,14 +65,7 @@ class LectureVideoForm(forms.ModelForm):
             ext = os.path.splitext(video_file.name)[1].lower()
             allowed_extensions = [".mp4", ".avi", ".mov", ".mkv"]
             if ext not in allowed_extensions:
-                raise forms.ValidationError(
-                    "Only video files (.mp4, .avi, .mov, .mkv) are allowed."
-                )
-
-            # # Validate file size (e.g., max 50MB)
-            # max_size = 50 * 1024 * 1024  # 50MB
-            # if video_file.size > max_size:
-            #     raise forms.ValidationError("File size must be less than 50MB.")
+                raise forms.ValidationError("Only video files (.mp4, .avi, .mov, .mkv) are allowed.")
 
         return video_file
 

@@ -1,5 +1,5 @@
-import cloudinary
 import uuid
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
@@ -10,12 +10,8 @@ from mindjunkies.courses.models import Course, Module
 
 
 class Lecture(BaseModel):
-    course = models.ForeignKey(
-        Course, on_delete=models.CASCADE, related_name="lectures"
-    )
-    module = models.ForeignKey(
-        Module, on_delete=models.CASCADE, related_name="lectures"
-    )
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="lectures")
+    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name="lectures")
 
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
@@ -27,11 +23,7 @@ class Lecture(BaseModel):
 
     class Meta:
         ordering = ["order"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["module", "order"], name="unique_order_per_module"
-            )
-        ]
+        constraints = [models.UniqueConstraint(fields=["module", "order"], name="unique_order_per_module")]
 
     def __str__(self):
         return f"{self.course.title} - {self.title}"
@@ -50,20 +42,17 @@ class Lecture(BaseModel):
 
     def clean(self):
         super().clean()
-        if (hasattr(self, "module") and self.module and self.order is not None and
-            Lecture.objects.filter(module=self.module, order=self.order)
-                .exclude(pk=self.pk)
-                .exists()
+        if (
+            hasattr(self, "module")
+            and self.module
+            and self.order is not None
+            and Lecture.objects.filter(module=self.module, order=self.order).exclude(pk=self.pk).exists()
         ):
-            raise ValidationError(
-                f"Order {self.order} already exists in this module."
-            )
+            raise ValidationError(f"Order {self.order} already exists in this module.")
 
 
 class LecturePDF(BaseModel):
-    lecture = models.ForeignKey(
-        Lecture, on_delete=models.CASCADE, related_name="pdf_files"
-    )
+    lecture = models.ForeignKey(Lecture, on_delete=models.CASCADE, related_name="pdf_files")
     pdf_file = models.FileField(upload_to="lecture_pdfs/")
     pdf_title = models.CharField(max_length=255)
 
@@ -82,10 +71,8 @@ class LectureVideo(BaseModel):
         (COMPLETED, "Completed"),
     )
 
-    lecture = models.ForeignKey(
-        "Lecture", on_delete=models.CASCADE, related_name="videos"
-    )
-    video_file = cloudinary.models.CloudinaryField(resource_type="video")
+    lecture = models.ForeignKey("Lecture", on_delete=models.CASCADE, related_name="videos")
+    video_file = models.FileField(upload_to="lecture_videos/")
     video_title = models.CharField(max_length=255)
     thumbnail = models.ImageField(upload_to="thumbnails", null=True, blank=True)
     hls = models.CharField(max_length=500, blank=True, null=True)

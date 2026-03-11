@@ -1,15 +1,13 @@
-import cloudinary
-import cloudinary.uploader
 import uuid
+
 from categories.models import CategoryBase
-from cloudinary.models import CloudinaryField
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.text import slugify
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.core.exceptions import ValidationError
+from taggit.managers import TaggableManager
 
 from config.models import BaseModel
-from taggit.managers import TaggableManager
 
 user = "accounts.User"
 
@@ -45,21 +43,11 @@ class Course(BaseModel):
     short_introduction = models.CharField(max_length=500)
     course_description = models.TextField()
     level = models.CharField(max_length=15, choices=LEVEL_CHOICES, default="beginner")
-    category = models.ForeignKey(
-        CourseCategory, on_delete=models.SET_NULL, related_name="courses", null=True
-    )
+    category = models.ForeignKey(CourseCategory, on_delete=models.SET_NULL, related_name="courses", null=True)
 
-    teacher = models.ForeignKey(
-        user, on_delete=models.CASCADE, related_name="courses_taught"
-    )
+    teacher = models.ForeignKey(user, on_delete=models.CASCADE, related_name="courses_taught")
 
-    course_image = CloudinaryField(
-        folder="course_images/",
-        resource_type="image",
-        overwrite=True,
-        null=True,
-        blank=True,
-    )
+    course_image = models.ImageField(upload_to="course_images/", null=True, blank=True)
 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="draft", blank=True)
 
@@ -104,9 +92,7 @@ class Course(BaseModel):
         ratings = self.ratings.all()
         self.number_of_ratings = ratings.count()
         self.total_rating = (
-            sum(r.rating for r in ratings) / self.number_of_ratings
-            if self.number_of_ratings > 0
-            else 0
+            sum(r.rating for r in ratings) / self.number_of_ratings if self.number_of_ratings > 0 else 0
         )
         self.save(update_fields=["total_rating", "number_of_ratings"])
 
@@ -139,12 +125,11 @@ class CourseInfo(BaseModel):
 class Rating(BaseModel):
     """Stores ratings and reviews for courses."""
 
-    student = models.ForeignKey(
-        user, on_delete=models.CASCADE, related_name="ratings"
-    )
+    student = models.ForeignKey(user, on_delete=models.CASCADE, related_name="ratings")
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="ratings")
     rating = models.PositiveSmallIntegerField(
-        choices=[(i, str(i)) for i in range(1, 6)], default=5  # 1 to 5 stars
+        choices=[(i, str(i)) for i in range(1, 6)],
+        default=5,  # 1 to 5 stars
     )
     review = models.TextField(blank=True, null=True)
 
@@ -170,12 +155,8 @@ class Enrollment(BaseModel):
         ("completed", "Completed"),
     ]
 
-    course = models.ForeignKey(
-        Course, on_delete=models.CASCADE, related_name="enrollments"
-    )
-    student = models.ForeignKey(
-        user, on_delete=models.CASCADE, related_name="enrolled"
-    )
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="enrollments")
+    student = models.ForeignKey(user, on_delete=models.CASCADE, related_name="enrolled")
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
 
     progression = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
@@ -197,15 +178,12 @@ class Module(BaseModel):
 
     class Meta:
         ordering = ["order"]
-        constraints = [
-            models.UniqueConstraint(fields=["course", "order"], name="unique_order_per_course")
-        ]
+        constraints = [models.UniqueConstraint(fields=["course", "order"], name="unique_order_per_course")]
 
     def __str__(self):
         return f"{self.title} - {self.course.title}"
 
     def save(self, *args, **kwargs):
-        # self.full_clean()  # call clean() before saving
         if Module.objects.filter(course=self.course, order=self.order).exclude(pk=self.pk).exists():
             raise ValidationError(f"Order {self.order} already exists in this Course.\nModule cannot have same order")
         super().save(*args, **kwargs)
@@ -214,8 +192,9 @@ class Module(BaseModel):
 class CourseToken(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="tokens")
     teacher = models.ForeignKey(user, on_delete=models.CASCADE)
-    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('approved', 'Approved')],
-                              default='pending')
+    status = models.CharField(
+        max_length=10, choices=[("pending", "Pending"), ("approved", "Approved")], default="pending"
+    )
 
     def __str__(self):
         return f"Token for {self.course.title} by {self.teacher.username}"

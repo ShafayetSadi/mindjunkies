@@ -73,7 +73,7 @@ Stores supplemental user info. Always created automatically via a `post_save` si
 | `user` | `OneToOneField → User` | `CASCADE` delete — profile dies with user |
 | `birthday` | `DateField` | Nullable |
 | `bio` | `TextField` | Nullable |
-| `avatar` | `CloudinaryField` | Stored in Cloudinary `avatars/` folder |
+| `avatar` | `ImageField` | Stored in media storage under `avatars/` |
 | `phone_number` | `CharField(15)` | Nullable |
 | `address` | `TextField` | Nullable |
 
@@ -109,7 +109,7 @@ The central content entity. Everything else — lectures, enrollments, payments,
 | `level` | `CharField` | `beginner / intermediate / advanced` |
 | `category` | `FK → CourseCategory` | `SET_NULL` on delete — course survives category deletion |
 | `teacher` | `FK → User` | `CASCADE` — course deleted if teacher deleted. `related_name=courses_taught` |
-| `course_image` | `CloudinaryField` | Stored in `course_images/` |
+| `course_image` | `ImageField` | Stored in media storage under `course_images/` |
 | `status` | `CharField` | `draft / published / archived`, default `draft` |
 | `published_on` | `DateTimeField` | Nullable — set manually |
 | `paid_course` | `BooleanField` | Auto-set to `True` in `save()` if `course_price > 0` |
@@ -286,15 +286,15 @@ A PDF file attachment for a lecture.
 
 ### `LectureVideo` *(lecture/models.py — extends BaseModel)*
 
-A video upload for a lecture. Cloudinary processes it to HLS for adaptive streaming.
+A video upload for a lecture.
 
 | Field | Type | Notes |
 |---|---|---|
 | `lecture` | `FK → Lecture` | `CASCADE`, `related_name=videos` |
-| `video_file` | `CloudinaryField(resource_type=video)` | Raw upload |
+| `video_file` | `FileField` | Raw upload |
 | `video_title` | `CharField(255)` | — |
 | `thumbnail` | `ImageField` | Nullable, local storage |
-| `hls` | `CharField(500)` | HLS streaming manifest URL — populated after Cloudinary processing |
+| `hls` | `CharField(500)` | Optional streaming manifest URL |
 | `status` | `CharField` | `Pending / Processing / Completed` |
 | `is_running` | `BooleanField` | Transient flag during processing |
 

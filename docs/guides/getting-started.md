@@ -7,7 +7,7 @@ Follow these steps to set up the project locally:
 - Python 3.11+
 - uv (Python dependency manager)
 - PostgreSQL / SQLite
-- Docker & Docker Compose (Redis, Elasticsearch)
+- Docker & Docker Compose (Redis)
 
 ## Local Development Setup
 
@@ -24,7 +24,7 @@ Follow these steps to set up the project locally:
 3. Start development:
     ```sh
     cp .env.example .env # Modify the environment variables
-    docker compose -f docker-compose.elasticsearch_redis.yml up -d # Start Redis and Elasticsearch
+    docker compose up -d db redis minio # Start local services
 
     uv run python manage.py migrate # Run migrations
     uv run python manage.py createsuperuser # Create a superuser

@@ -1,8 +1,8 @@
 import uuid
 
-from cloudinary.models import CloudinaryField
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.fields.files import ImageField
 
 from config.models import BaseModel
 from mindjunkies.courses.models import Enrollment, Rating
@@ -43,12 +43,7 @@ class User(AbstractUser):
         return self.courses_taught.all()
 
     def get_number_of_students(self):
-        return (
-            Enrollment.objects.filter(course__teacher=self, status="active")
-            .values("student")
-            .distinct()
-            .count()
-        )
+        return Enrollment.objects.filter(course__teacher=self, status="active").values("student").distinct().count()
 
     def get_number_of_courses(self):
         return self.courses_taught.count()
@@ -57,14 +52,10 @@ class User(AbstractUser):
 class Profile(BaseModel):
     """User profile model storing additional user details."""
 
-    user = models.OneToOneField(
-        "accounts.User", on_delete=models.CASCADE, related_name="profile"
-    )
+    user = models.OneToOneField("accounts.User", on_delete=models.CASCADE, related_name="profile")
     birthday = models.DateField(null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
-    avatar = CloudinaryField(
-        folder="avatars", overwrite=True, resource_type="image", null=True, blank=True
-    )
+    avatar = ImageField(upload_to="avatars/", null=True, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
 

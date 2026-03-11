@@ -20,14 +20,8 @@
   <a href="https://redis.io/">
     <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis" />
   </a>
-  <a href="https://www.elastic.co/elasticsearch/">
-    <img src="https://img.shields.io/badge/Elasticsearch-005571?style=for-the-badge&logo=elasticsearch&logoColor=white" alt="Elasticsearch" />
-  </a>
   <a href="https://tailwindcss.com/">
     <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
-  </a>
-  <a href="https://django-unfold.readthedocs.io/">
-    <img src="https://img.shields.io/badge/Django_Unfold-0B0D0D?style=for-the-badge&logo=django&logoColor=white" alt="Django Unfold" />
   </a>
   <a href="https://github.com/jazzband/django-silk">
     <img src="https://img.shields.io/badge/Django_Silk-4B8BBE?style=for-the-badge&logo=python&logoColor=white" alt="Django Silk" />
@@ -300,7 +294,7 @@ Follow these steps to set up the project locally:
 - Python 3.11+
 - uv (Python dependency manager)
 - PostgreSQL / SQLite
-- Docker & Docker Compose (Redis, Elasticsearch)
+- Docker & Docker Compose (Redis)
 
 ### Local Development Setup
 
@@ -317,7 +311,7 @@ Follow these steps to set up the project locally:
 3. Start development:
     ```sh
     cp .env.example .env # Modify the environment variables
-    docker compose -f docker-compose.elasticsearch_redis.yml up -d # Start Redis and Elasticsearch
+    docker compose up -d db redis minio # Start local services
 
     uv run python manage.py migrate # Run migrations
     uv run python manage.py createsuperuser # Create a superuser

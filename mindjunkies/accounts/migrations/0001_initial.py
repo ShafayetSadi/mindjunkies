@@ -2,7 +2,6 @@
 
 import uuid
 
-import cloudinary.models
 import django.contrib.auth.models
 import django.contrib.auth.validators
 import django.db.models.deletion
@@ -149,9 +148,7 @@ class Migration(migrations.Migration):
                 ("bio", models.TextField()),
                 (
                     "avatar",
-                    cloudinary.models.CloudinaryField(
-                        blank=True, max_length=255, null=True
-                    ),
+                    models.ImageField(blank=True, null=True, upload_to="avatars/"),
                 ),
                 (
                     "phone_number",

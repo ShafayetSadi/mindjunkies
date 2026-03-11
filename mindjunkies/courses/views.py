@@ -9,14 +9,11 @@ from django.urls import reverse, reverse_lazy
 from django.views.decorators.http import require_http_methods
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic import TemplateView
 
-from mindjunkies.courses.models import Course, CourseCategory, Enrollment
-from .models import Course, Enrollment
-from .forms import CourseForm, RatingForm
-from .models import CourseToken, LastVisitedCourse, Rating
-from django.dispatch import Signal
 from mindjunkies.courses.signals import course_updated
+
+from .forms import CourseForm, RatingForm
+from .models import Course, CourseCategory, CourseToken, Enrollment, Rating
 
 
 @require_http_methods(["GET"])
@@ -32,9 +29,9 @@ def course_list(request: HttpRequest) -> HttpResponse:
 class BaseCourseView(TemplateView):
     def get_enrolled_courses(self):
         if self.request.user.is_authenticated:
-            enrollments = Enrollment.objects.filter(
-                student=self.request.user, status="active"
-            ).prefetch_related("course")
+            enrollments = Enrollment.objects.filter(student=self.request.user, status="active").prefetch_related(
+                "course"
+            )
             return [enrollment.course for enrollment in enrollments]
         return []
 
@@ -46,9 +43,11 @@ class NewCourseView(BaseCourseView):
         context = super().get_context_data(**kwargs)
         enrolled_courses = self.get_enrolled_courses()
 
-        new_courses = Course.objects.exclude(
-            id__in=[course.id for course in enrolled_courses]
-        ).filter(verified=True).order_by("-created_at")
+        new_courses = (
+            Course.objects.exclude(id__in=[course.id for course in enrolled_courses])
+            .filter(verified=True)
+            .order_by("-created_at")
+        )
 
         context["new_courses"] = new_courses
         return context
@@ -61,9 +60,7 @@ class PopularCoursesView(BaseCourseView):
         context = super().get_context_data(**kwargs)
         enrolled_courses = self.get_enrolled_courses()
 
-        courses = Course.objects.exclude(
-            id__in=[course.id for course in enrolled_courses]
-        )
+        courses = Course.objects.exclude(id__in=[course.id for course in enrolled_courses])
 
         popular_courses = courses.filter(verified=True).order_by("-enrollments")
         context["popular_courses"] = popular_courses
@@ -78,9 +75,7 @@ class MyCoursesView(LoginRequiredMixin, TemplateView):
 
         # With prefetch for better performance
         enrolled_courses = (
-            Course.objects.filter(
-                enrollments__student=self.request.user, enrollments__status="active"
-            )
+            Course.objects.filter(enrollments__student=self.request.user, enrollments__status="active")
             .prefetch_related("enrollments")
             .distinct()
         )
@@ -98,9 +93,7 @@ class CreateCourseView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["verification"] = CourseToken.objects.filter(
-            teacher=self.request.user, status="pending"
-        ).exists()
+        context["verification"] = CourseToken.objects.filter(teacher=self.request.user, status="pending").exists()
         return context
 
     def get(self, request, *args, **kwargs):
@@ -119,18 +112,14 @@ class CreateCourseView(LoginRequiredMixin, CreateView):
         course.save()
         form.save_m2m()
 
-        CourseToken.objects.create(
-            course=course, teacher=self.request.user, status="pending"
-        )
+        CourseToken.objects.create(course=course, teacher=self.request.user, status="pending")
 
         course_updated.send(sender=Course, instance=course, user=self.request.user)
         messages.success(self.request, "Course created successfully and is pending approval!")
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(
-            self.request, "There was an error processing the form. Please correct the errors below."
-        )
+        messages.error(self.request, "There was an error processing the form. Please correct the errors below.")
         return self.render_to_response(self.get_context_data(form=form))
 
 
@@ -151,9 +140,7 @@ class CourseUpdateView(LoginRequiredMixin, UpdateView):
         return redirect(reverse("course_details", kwargs={"slug": form.instance.slug}))
 
     def form_invalid(self, form):
-        messages.error(
-            self.request, f"There was an error processing the form: {form.errors}"
-        )
+        messages.error(self.request, f"There was an error processing the form: {form.errors}")
         return self.render_to_response(self.get_context_data(form=form))
 
 
@@ -166,9 +153,7 @@ def course_details(request: HttpRequest, slug: str) -> HttpResponse:
     num_lectures = course.modules.aggregate(models.Count("lectures"))["lectures__count"]
 
     if request.user.is_authenticated:
-        enrolled = course.enrollments.filter(
-            student=request.user, status="active"
-        ).exists()
+        enrolled = course.enrollments.filter(student=request.user, status="active").exists()
 
     paginator = Paginator(ratings, 5)
     page = request.GET.get("page", 1)
@@ -191,10 +176,12 @@ def course_details(request: HttpRequest, slug: str) -> HttpResponse:
 @login_required
 @require_http_methods(["GET"])
 def user_course_list(request: HttpRequest) -> HttpResponse:
-    courses = Course.objects.filter(
-        enrollments__student=request.user,
-        enrollments__status="active"
-    ).exclude(teacher=request.user).select_related("category", "teacher").distinct()
+    courses = (
+        Course.objects.filter(enrollments__student=request.user, enrollments__status="active")
+        .exclude(teacher=request.user)
+        .select_related("category", "teacher")
+        .distinct()
+    )
 
     return render(request, "courses/course_list.html", {"courses": courses})
 

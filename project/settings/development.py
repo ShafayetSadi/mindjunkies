@@ -25,19 +25,27 @@ DATABASES = {
     }
 }
 
+MINIO_ENDPOINT = config("MINIO_ENDPOINT", default="localhost:9000")
+MINIO_ACCESS_KEY = config("MINIO_ROOT_USER", default="minioadmin")
+MINIO_SECRET_KEY = config("MINIO_ROOT_PASSWORD", default="minioadmin")
+MINIO_BUCKET = config("MINIO_BUCKET", default="mindjunkies")
+
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "endpoint_url": f"http://{MINIO_ENDPOINT}",
+            "access_key": MINIO_ACCESS_KEY,
+            "secret_key": MINIO_SECRET_KEY,
+            "bucket_name": MINIO_BUCKET,
+            "default_acl": "public-read",
+            "file_overwrite": False,
+            "use_ssl": False,
+        },
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
-}
-
-ELASTICSEARCH_DSL = {
-    "default": {
-        "hosts": f"http://{config('ELASTICSEARCH_HOST', default='localhost')}:9200"
-    }
 }
 
 REDIS_HOST = config("REDIS_HOST", default="127.0.0.1")
@@ -55,7 +63,7 @@ CACHES = {
 }
 
 RESEND_API_KEY = config("RESEND_API_KEY")
-EMAIL_BACKEND = 'utils.email_backends.ResendEmailBackend'
+EMAIL_BACKEND = "utils.email_backends.ResendEmailBackend"
 DEFAULT_FROM_EMAIL = config("RESEND_FROM_EMAIL")
 
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"

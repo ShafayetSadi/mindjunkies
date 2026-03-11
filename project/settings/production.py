@@ -1,5 +1,5 @@
 from project.settings.base import *  # noqa
-from decouple import config, Csv
+from decouple import config
 
 DEBUG = True
 
@@ -27,12 +27,6 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
     }
-}
-
-ELASTICSEARCH_DSL = {
-    'default': {
-        'hosts': config('ELASTICSEARCH_HOST', default='localhost:9200'),
-    },
 }
 
 STORAGES = {
@@ -65,7 +59,7 @@ STORAGES = {
 }
 
 RESEND_API_KEY = config("RESEND_API_KEY")
-EMAIL_BACKEND = 'utils.email_backends.ResendEmailBackend'
+EMAIL_BACKEND = "utils.email_backends.ResendEmailBackend"
 DEFAULT_FROM_EMAIL = config("RESEND_FROM_EMAIL")
 
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"

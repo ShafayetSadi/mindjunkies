@@ -17,18 +17,6 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
-        ports:
-          - 9200:9200
-        options: >-
-          --env discovery.type=single-node
-          --env xpack.security.enabled=false
-          --health-cmd "curl -f http://localhost:9200/_cluster/health || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-
       redis:
         image: redis:latest
         ports:
@@ -48,7 +36,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install uv
         run: |
@@ -64,7 +52,7 @@ jobs:
           echo "DJANGO_SETTINGS_MODULE=project.settings.test" >> .env
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
           echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
-          
+
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
           echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
           echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> .env
@@ -77,21 +65,16 @@ jobs:
           echo "JITSI_APP_ID=${{ secrets.JITSI_APP_ID }}" >> .env
           echo "JITSI_SECRET=${{ secrets.JITSI_SECRET }}" >> .env
 
-          echo "CLOUDINARY_NAME=${{ secrets.CLOUDINARY_NAME }}" >> .env
-          echo "CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}" >> .env
-          echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
-
           echo "TEST_PASS=${{ secrets.TEST_PASS }}" >> .env
           echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
           echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
           echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
-          
-          ELASTICSEARCH_HOST=${{ secrets.ELASTICSEARCH_HOST }}
+
         shell: bash
 
       - name: Wait for Services to be Ready
         run: |
-          echo "Waiting for Elasticsearch and Redis to be healthy..."
+          echo "Waiting for Redis to be healthy..."
           sleep 20  # Optional, just to make sure services are ready
 
       - name: Run Tests and Generate Coverage Report

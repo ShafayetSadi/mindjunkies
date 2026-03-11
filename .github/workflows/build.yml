@@ -2,9 +2,9 @@ name: Build Docker Container & Push to DO Registry
 
 on:
   push:
-    branches: [ main, deployment-digitalocean ]
+    branches: [main, deployment-digitalocean]
   pull_request:
-    branches: [ main, deployment-digitalocean ]
+    branches: [main, deployment-digitalocean]
 
 permissions:
   contents: read
@@ -16,18 +16,6 @@ jobs:
       run:
         working-directory: .
     services:
-      elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
-        ports:
-          - 9200:9200
-        options: >-
-          --env discovery.type=single-node
-          --env xpack.security.enabled=false
-          --health-cmd "curl -f http://localhost:9200/_cluster/health || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-
       redis:
         image: redis:latest
         ports:
@@ -53,10 +41,6 @@ jobs:
       EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
       DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
 
-      CLOUDINARY_NAME: ${{ secrets.CLOUDINARY_NAME }}
-      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-
       TEST_PASS: ${{ secrets.TEST_PASS }}
       REDIS_HOST: ${{ secrets.REDIS_HOST }}
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
@@ -68,7 +52,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [ 3.13 ]
+        python-version: [3.13]
 
     steps:
       - uses: actions/checkout@v4
@@ -88,7 +72,7 @@ jobs:
 
       - name: Wait for Services to be Ready
         run: |
-          echo "Waiting for Elasticsearch and Redis to be healthy..."
+          echo "Waiting for Redis to be healthy..."
           sleep 20  # Optional, just to make sure services are ready
 
       - name: Run Tests
@@ -149,24 +133,24 @@ jobs:
         run: |
           echo "Creating .env.prod file from GitHub Secrets..."
           cat << EOF > .env.prod
-          
+
           DJANGO_SETTINGS_MODULE=project.settings.production
           SECRET_KEY=${{ secrets.SECRET_KEY }}
           ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
-          
+
           AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          
+
           DJANGO_SUPERUSER_USERNAME=${{ secrets.DJANGO_SUPERUSER_USERNAME }}
           DJANGO_SUPERUSER_PASSWORD=${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
           DJANGO_SUPERUSER_EMAIL=${{ secrets.DJANGO_SUPERUSER_EMAIL }}
-          
+
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
           POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
-          
+
           GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
@@ -178,20 +162,14 @@ jobs:
           JITSI_APP_ID=${{ secrets.JITSI_APP_ID }}
           JITSI_SECRET=${{ secrets.JITSI_SECRET }}
 
-          CLOUDINARY_NAME=${{ secrets.CLOUDINARY_NAME }}
-          CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
-          CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
-
           TEST_PASS=${{ secrets.TEST_PASS }}
           REDIS_HOST=${{ secrets.REDIS_HOST }}
           REDIS_PORT=${{ secrets.REDIS_PORT }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-          
-          ELASTICSEARCH_HOST=${{ secrets.ELASTICSEARCH_HOST }}
-          
+
           RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
           RESEND_FROM_EMAIL=${{ secrets.RESEND_FROM_EMAIL }}
-          
+
           EOF
           echo "Updating Kubernetes Secret..."
           kubectl delete secret django-mindjunkies-prod-env --ignore-not-found
@@ -213,10 +191,6 @@ jobs:
       - name: Deploy Redis
         run: |
           kubectl apply -f k8s/apps/redis.yml
-
-      - name: Deploy Elasticsearch
-        run: |
-          kubectl apply -f k8s/apps/elasticsearch.yml
 
   run-postdeploy-jobs:
     runs-on: ubuntu-latest
@@ -241,14 +215,13 @@ jobs:
 
           echo "Waiting for job to complete..."
           kubectl wait --for=condition=complete job/django-migrate-job --timeout=120s
-          
+
           kubectl delete job django-collectstatic-job --ignore-not-found
           kubectl wait --for=delete job/django-collectstatic-job --timeout=60s
           kubectl apply -f k8s/jobs/django-collectstatic-job.yml
 
           echo "Waiting for job to complete..."
           kubectl wait --for=condition=complete job/django-collectstatic-job --timeout=120s
-          
 
       - name: Rebuild Search Index
         run: |
@@ -259,4 +232,3 @@ jobs:
 
           kubectl apply -f k8s/jobs/django-rebuild-search-job.yml
           kubectl wait --for=condition=complete job/django-rebuild-search-job --timeout=240s
-

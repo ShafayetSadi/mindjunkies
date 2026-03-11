@@ -1,20 +1,18 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.views import View
 from django.views.generic.edit import FormView
-from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from mindjunkies.accounts.models import User
-from mindjunkies.courses.models import Course, Enrollment, CourseToken
-from mindjunkies.payments.models import Transaction, Balance
+from mindjunkies.courses.models import Course, Enrollment
 from mindjunkies.dashboard.forms import TeacherVerificationForm
 from mindjunkies.dashboard.mixins import VerifiedTeacherRequiredMixin
-from mindjunkies.dashboard.models import TeacherVerification, Certificate
-
-VIEW_COURSE_PERMISSION = "courses.view_course"
+from mindjunkies.dashboard.models import Certificate, TeacherVerification
+from mindjunkies.payments.models import Balance, Transaction
 
 
 class TeacherHome(VerifiedTeacherRequiredMixin, View):
@@ -54,18 +52,21 @@ class ContentListView(VerifiedTeacherRequiredMixin, View):
             return render(request, "components/archive.html", context)
 
         if status == "balance":
-            balance = Balance.objects.filter(user=request.user).first() or Balance.objects.create(user=request.user,
-                                                                                                  amount=0)
-            transactions = Transaction.objects.filter(user=request.user).order_by('-tran_date')
+            balance = Balance.objects.filter(user=request.user).first() or Balance.objects.create(
+                user=request.user, amount=0
+            )
+            transactions = Transaction.objects.filter(user=request.user).order_by("-tran_date")
 
             paginator = Paginator(transactions, 10)
             page_obj = paginator.get_page(request.GET.get("page", 1))
 
-            context.update({
-                "balance": balance,
-                "transactions": page_obj,
-                "status": "Balance",
-            })
+            context.update(
+                {
+                    "balance": balance,
+                    "transactions": page_obj,
+                    "status": "Balance",
+                }
+            )
             return render(request, "components/balance.html", context)
 
         return redirect("dashboard")
@@ -100,13 +101,14 @@ class RemoveEnrollmentView(VerifiedTeacherRequiredMixin, View):
 
         enrollment.delete()
 
-        return redirect('teacher_dashboard_enrollments', course.slug)
+        return redirect("teacher_dashboard_enrollments", course.slug)
 
 
 class TeacherVerificationView(LoginRequiredMixin, FormView):
     """
     Form for users to submit verification to become a teacher.
     """
+
     template_name = "teacher_verification.html"
     form_class = TeacherVerificationForm
     success_url = reverse_lazy("home")
@@ -114,10 +116,10 @@ class TeacherVerificationView(LoginRequiredMixin, FormView):
     def get(self, request, *args, **kwargs):
         if request.user.is_teacher:
             print("teacher is true")
-            return redirect('dashboard')
+            return redirect("dashboard")
         if TeacherVerification.objects.filter(user=request.user).exists():
             print("verification exists")
-            return redirect('verification_wait')
+            return redirect("verification_wait")
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -147,7 +149,7 @@ class VerificationWaitView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         if request.user.is_teacher:
             messages.info(request, "You are already a verified teacher.")
-            return redirect('dashboard')
+            return redirect("dashboard")
 
         return render(
             request,

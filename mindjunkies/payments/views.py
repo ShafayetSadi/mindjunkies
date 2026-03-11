@@ -13,12 +13,10 @@ from sslcommerz_lib import SSLCOMMERZ
 from mindjunkies.accounts.models import User
 from mindjunkies.courses.models import Course, Enrollment
 
-from .models import PaymentGateway, Transaction, Balance, BalanceHistory
+from .models import Balance, BalanceHistory, PaymentGateway, Transaction
 
 
-def unique_transaction_id_generator(
-    size=10, chars=string.ascii_uppercase + string.digits
-):
+def unique_transaction_id_generator(size=10, chars=string.ascii_uppercase + string.digits):
     trans_id = "".join(secrets.choice(chars) for _ in range(size))
     if Transaction.objects.filter(tran_id=trans_id).exists():
         return unique_transaction_id_generator(size, chars)
@@ -151,7 +149,6 @@ class CheckoutSuccessView(View):
                 risk_level=data["risk_level"],
             )
 
-            # BalanceHistory.objects.create(user=user, transaction)
             teacher = course.teacher
             balance, _ = Balance.objects.get_or_create(user=user, defaults={"amount": 0})
 
@@ -168,7 +165,7 @@ class CheckoutSuccessView(View):
                 amount=course.course_price,
                 new_balance=new_balance,
                 previous_balance=prev_balance,
-                description="Enrollment successful"
+                description="Enrollment successful",
             )
 
             # Update enrollment status
@@ -180,9 +177,7 @@ class CheckoutSuccessView(View):
 
         except Exception as e:
             print(f"Error in processing success response: {e}")
-            messages.error(
-                request, "Something went wrong while processing the payment."
-            )
+            messages.error(request, "Something went wrong while processing the payment.")
             return redirect("home")
 
 

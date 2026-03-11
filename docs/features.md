@@ -11,7 +11,7 @@
 | Password reset / change | Full allauth flow |
 | Google OAuth2 login | Social account linking |
 | Auto profile creation | Signal-driven on user signup |
-| Profile view & edit | Avatar (Cloudinary), bio, phone, address, birthday |
+| Profile view & edit | Avatar, bio, phone, address, birthday |
 
 ### Course Catalog & Discovery
 | Feature | Details |
@@ -43,7 +43,7 @@
 | Create lecture | Ordered within module, auto-slug |
 | Edit lecture | Title, description, learning objective |
 | Delete lecture | Triggers progression recalculation for all students |
-| Upload video | Cloudinary upload; HLS URL stored after processing |
+| Upload video | File upload; optional HLS URL field |
 | Upload PDF | `FileField`-based attachment, `lecture_pdfs/` path |
 | Content gating | Upload blocked until `CourseToken.status = approved` |
 
@@ -52,7 +52,7 @@
 |---|---|
 | Enroll in free course | Instant `active` enrollment at checkout |
 | Enroll in paid course | SSLCommerz gateway → `pending` → `active` on success |
-| Video playback | HLS adaptive stream served from Cloudinary |
+| Video playback | File or HLS playback based on available source |
 | PDF viewing | In-browser PDF display |
 | Mark lecture complete | Creates `LectureCompletion` record |
 | Course progression | Auto-calculated `(completed/total)*100` via signals |
@@ -106,7 +106,7 @@
 | Like topics | Toggle like via M2M through-table |
 | Like comments | Same pattern |
 | Like replies | Same pattern |
-| Forum search | Elasticsearch `match` query on topic title |
+| Forum search | Database `icontains` query on topic title/content |
 
 ---
 
@@ -125,7 +125,7 @@
 | Cache invalidation signal | `courses/signals.py` | Clears `popular_courses` / `new_courses` on course creation |
 | `LastVisitedCourse` tracking | `courses/` | Tracks per-user last-visited course |
 | Request profiling | `django-silk` | Profiling middleware always active |
-| Admin dashboard | `django-unfold` | Custom admin UI for all models |
+| Admin dashboard | Django admin | Model management and moderation |
 | HTMX subcategory load | `home/views.py` | Dynamic category children without page reload |
 | `LectureCompletion` deletion | `lecture/signals.py` | Progression recalculated when completion removed |
 | `Lecture` deletion signal | `lecture/signals.py` | Recalculates all students' progression when a lecture is deleted |
@@ -146,7 +146,7 @@
 | Feature | File | Problem |
 |---|---|---|
 | **Soft delete** | `config/models.py` | `BaseModel.deleted_at` field defined on every model. No `SoftDeleteManager`, no queryset filter, no `delete()` override — field is set nowhere and read nowhere. |
-| **`LectureVideo.status` processing pipeline** | `lecture/models.py` | `Pending / Processing / Completed` states defined; `is_running` flag defined. Nothing in the codebase transitions these states — no Celery task, no webhook, no signal. Videos are uploaded directly to Cloudinary; the status field stays `Pending` forever. |
+| **`LectureVideo.status` processing pipeline** | `lecture/models.py` | `Pending / Processing / Completed` states defined; `is_running` flag defined. Nothing in the codebase transitions these states — no Celery task, no webhook, no signal. |
 | **`LiveClass.status` lifecycle** | `live_classes/models.py` | `Upcoming / Ongoing / Completed` states defined. No scheduled task, no signal, no view updates this field. All classes stay `Upcoming` indefinitely after creation. |
 | **`Course.published_on`** | `courses/models.py` | `DateTimeField(null=True)` — never populated in any view or signal. The field exists but no part of the app sets it when a course is published. |
 | **`Course.upcoming`** | `courses/models.py` | Boolean flag with no dedicated view, filter, or UI for upcoming/pre-launch courses. |
@@ -157,8 +157,8 @@
 ### Incomplete / Partially Wired
 | Feature | File | Problem |
 |---|---|---|
-| **Elasticsearch course search** | `home/views.py` | Homepage search uses `Course.objects.filter(title__icontains=...)`. The `ForumTopicDocument` in `forums/documents.py` uses Elasticsearch, but no `CourseDocument` exists — course search does not use it. |
-| **HLS video playback** | `lecture/models.py` | `LectureVideo.hls` field stores the streaming URL, but no mechanism populates it. Cloudinary video upload saves `video_file` but the HLS transcode URL must be manually set or requires a webhook that is not implemented. |
+| **Search indexing service** | `home/views.py` | Homepage search uses `Course.objects.filter(title__icontains=...)`; there is no external search index dependency. |
+| **HLS video playback** | `lecture/models.py` | `LectureVideo.hls` exists, but no automated processing pipeline currently populates it. |
 | **`PaymentGateway` model** | `payments/models.py` | Credentials fetched from DB via `PaymentGateway.objects.first()` in `CheckoutView`. If no row exists, the checkout silently fails. No admin validation, no fallback to env vars. |
 | **Reply-to-reply nesting** | `forums/models.py` | `Reply.parent_reply` self-FK supports infinite nesting. The `ReplyFormView` handles one level of nesting. Deeper thread rendering is not confirmed in templates. |
 | **Debug `print()` statements** | Multiple files | `home/views.py` (3×), `lecture/views.py` (2×), `dashboard/views.py` (2×) — production log noise. |

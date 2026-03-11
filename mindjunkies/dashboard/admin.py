@@ -1,7 +1,7 @@
 # Register your models here.
 from django.contrib import admin
 from django.contrib.auth.models import Group
-from unfold.admin import ModelAdmin
+from django.contrib.admin import ModelAdmin
 
 from .models import Certificate, TeacherVerification
 
