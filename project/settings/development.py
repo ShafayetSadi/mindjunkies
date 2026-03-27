@@ -25,23 +25,9 @@ DATABASES = {
     }
 }
 
-MINIO_ENDPOINT = config("MINIO_ENDPOINT", default="localhost:9000")
-MINIO_ACCESS_KEY = config("MINIO_ROOT_USER", default="minioadmin")
-MINIO_SECRET_KEY = config("MINIO_ROOT_PASSWORD", default="minioadmin")
-MINIO_BUCKET = config("MINIO_BUCKET", default="mindjunkies")
-
 STORAGES = {
     "default": {
-        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-        "OPTIONS": {
-            "endpoint_url": f"http://{MINIO_ENDPOINT}",
-            "access_key": MINIO_ACCESS_KEY,
-            "secret_key": MINIO_SECRET_KEY,
-            "bucket_name": MINIO_BUCKET,
-            "default_acl": "public-read",
-            "file_overwrite": False,
-            "use_ssl": False,
-        },
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",

@@ -311,7 +311,7 @@ Follow these steps to set up the project locally:
 3. Start development:
     ```sh
     cp .env.example .env # Modify the environment variables
-    docker compose up -d db redis minio # Start local services
+    docker compose up -d db redis # Start local services
 
     uv run python manage.py migrate # Run migrations
     uv run python manage.py createsuperuser # Create a superuser

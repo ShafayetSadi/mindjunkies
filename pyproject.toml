@@ -5,10 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "authlib>=1.5.1",
+    "authlib>=1.6.9",
     "crispy-tailwind>=1.0.3",
     "dj-database-url>=2.3.0",
-    "django>=5.1.7",
+    "django>=6.0.3",
     "django-allauth[socialaccount]>=65.4.1",
     "django-categories>=2.0.0",
     "django-crispy-forms>=2.3",
@@ -33,7 +33,7 @@ dev = [
     "django-browser-reload>=1.18.0",
     "django-extensions>=3.2.3",
     "django-silk>=5.3.2",
-    "django-tailwind-cli>=4.1.0",
+    "django-tailwind-cli>=4.5.1",
     "freezegun>=1.5.1",
     "model-bakery>=1.20.4",
     "pre-commit>=4.1.0",
@@ -59,7 +59,7 @@ line-length = 119
 [tool.ruff.lint]
 extend-select = [
     "E501",
-    #    "UP", # pyupgrade
+    "UP", # pyupgrade
     "F", # Pyflakes
     "E", # pycodestyle-errors
     "W", # pycodestyle-warnings

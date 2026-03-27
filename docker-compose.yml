@@ -34,25 +34,7 @@ services:
       retries: 5
       start_period: 30s
 
-  minio:
-    image: minio/minio:latest
-    container_name: mindjunkies-minio
-    restart: unless-stopped
-    ports:
-      - "9000:9000" # S3 API
-      - "9001:9001" # Web console → http://localhost:9001
-    volumes:
-      - minio_data:/data
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-    command: server /data --console-address ":9001"
-    healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
+
 
   mindjunkies:
     container_name: mindjunkies-web
@@ -61,8 +43,6 @@ services:
       db:
         condition: service_healthy
       redis:
-        condition: service_healthy
-      minio:
         condition: service_healthy
     build:
       context: .
@@ -73,7 +53,6 @@ services:
       - UV_PROJECT_ENVIRONMENT=/venv
       - POSTGRES_HOST=db
       - REDIS_HOST=redis
-      - MINIO_ENDPOINT=minio:9000
     env_file:
       - .env
     ports:
@@ -85,4 +64,3 @@ services:
 volumes:
   db_data:
   redis_data:
-  minio_data:
